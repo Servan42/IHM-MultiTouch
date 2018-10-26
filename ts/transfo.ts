@@ -55,7 +55,7 @@ export let drag =       ( element               : HTMLElement
                         , Pt_coord_element      : SVGPoint
                         , Pt_coord_parent       : SVGPoint
                         ) => {
-	// TO BE DONE
+	// TO BE DONE ->
 };
 
 //______________________________________________________________________________________________________________________
@@ -66,6 +66,6 @@ export let rotozoom =   ( element           : HTMLElement
                         , Pt2_coord_element : SVGPoint
                         , Pt2_coord_parent  : SVGPoint
                         ) => {
-	// TO BE DONE
+	// TO BE DONE ->
 };
 

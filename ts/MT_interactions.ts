@@ -24,8 +24,7 @@ function multiTouch(element: HTMLElement) : void {
                 eventName: ["touchstart"],
                 useCapture: false,
                 action: (evt : TouchEvent) : boolean => {
-                    // To be completed
-                    return true;
+                    return (evt.type === "touchstart") && (getRelevantDataFromEvent(evt) != null);
                 }
             },
             { from: MT_STATES.Translating, to: MT_STATES.Translating,
@@ -35,8 +34,13 @@ function multiTouch(element: HTMLElement) : void {
                 action: (evt : TouchEvent) : boolean => {
                     evt.preventDefault();
                     evt.stopPropagation();
-                    // To be completed
-                    return true;
+                    if ((evt.type === "touchmove")  && (getRelevantDataFromEvent(evt) != null)){
+                        // TO BE DONE -> transfo.drag()
+                        console.log("translating");
+                        return true;
+                    }
+
+                    return false;
                 }
             },
             { from: MT_STATES.Translating,
@@ -45,8 +49,7 @@ function multiTouch(element: HTMLElement) : void {
                 eventName: ["touchend"],
                 useCapture: true,
                 action: (evt : TouchEvent) : boolean => {
-                    // To be completed
-                    return true;
+                    return (evt.type === "touchend") && (getRelevantDataFromEvent(evt) != null);
                 }
             },
             { from: MT_STATES.Translating, to: MT_STATES.Rotozooming,
@@ -54,8 +57,7 @@ function multiTouch(element: HTMLElement) : void {
                 eventName: ["touchstart"],
                 useCapture: false,
                 action: (evt : TouchEvent) : boolean => {
-                    // To be completed
-                    return true;
+                    return (evt.type === "touchstart") && (getRelevantDataFromEvent(evt) != null);                    return true;
                 }
             },
             { from: MT_STATES.Rotozooming, to: MT_STATES.Rotozooming,
@@ -65,8 +67,13 @@ function multiTouch(element: HTMLElement) : void {
                 action: (evt : TouchEvent) : boolean => {
                     evt.preventDefault();
                     evt.stopPropagation();
-                    // To be completed
-                    return true;
+                    if ((evt.type === "touchmove") && (getRelevantDataFromEvent(evt) != null)) {
+                        // TO BE DONE -> transfo.rotozoom()
+                        console.log("rotozoom");
+
+                        return true;
+                    }
+                    return false;
                 }
             },
             { from: MT_STATES.Rotozooming,
@@ -75,9 +82,8 @@ function multiTouch(element: HTMLElement) : void {
                 eventName: ["touchend"],
                 useCapture: true,
                 action: (evt : TouchEvent) : boolean => {
-                    const touch = getRelevantDataFromEvent(evt);
-                    // To be completed
-                    return true;
+                    // const touch = getRelevantDataFromEvent(evt);
+                    return (evt.type === "touchend") && (getRelevantDataFromEvent(evt) != null);
                 }
             }
         ]

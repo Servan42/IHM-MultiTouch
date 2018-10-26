@@ -1,6 +1,6 @@
 class State {
     private transitionsFrom: Transition[] = [];
-    //constructor() {}
+    // constructor() {}
     addTransitionFrom(t: Transition) {
         this.transitionsFrom.push( t );
     }
