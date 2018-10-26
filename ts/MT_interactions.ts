@@ -24,7 +24,11 @@ function multiTouch(element: HTMLElement) : void {
                 eventName: ["touchstart"],
                 useCapture: false,
                 action: (evt : TouchEvent) : boolean => {
-                    return (evt.type === "touchstart") && (getRelevantDataFromEvent(evt) != null);
+                    let touch = evt.touches[0];
+                    originalMatrix = transfo.getMatrixFromElement(element);
+                    pointerId_1 = touch.identifier;
+                    Pt1_coord_element = transfo.getPoint(touch.clientX, touch.clientY);
+                    return true;
                 }
             },
             { from: MT_STATES.Translating, to: MT_STATES.Translating,
@@ -34,8 +38,11 @@ function multiTouch(element: HTMLElement) : void {
                 action: (evt : TouchEvent) : boolean => {
                     evt.preventDefault();
                     evt.stopPropagation();
-                    if ((evt.type === "touchmove")  && (getRelevantDataFromEvent(evt) != null)){
+                    let touch = getRelevantDataFromEvent(evt);
+                    if (touch != null && touch.identifier === pointerId_1){
+                        Pt1_coord_parent = transfo.getPoint(touch.clientX, touch.clientY);
                         // TO BE DONE -> transfo.drag()
+                        transfo.drag(element, originalMatrix, Pt1_coord_element, Pt1_coord_parent);
                         console.log("translating");
                         return true;
                     }
