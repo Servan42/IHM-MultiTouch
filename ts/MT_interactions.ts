@@ -56,7 +56,13 @@ function multiTouch(element: HTMLElement) : void {
                 eventName: ["touchend"],
                 useCapture: true,
                 action: (evt : TouchEvent) : boolean => {
-                    return (evt.type === "touchend") && (getRelevantDataFromEvent(evt) != null);
+                    let touch = getRelevantDataFromEvent(evt);
+                    if(touch.identifier != null && touch.identifier === pointerId_1){
+                        pointerId_1 = null;
+                        true;
+                    }
+
+                    return false;
                 }
             },
             { from: MT_STATES.Translating, to: MT_STATES.Rotozooming,
