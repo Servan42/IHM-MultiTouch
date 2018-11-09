@@ -24,12 +24,14 @@ function multiTouch(element: HTMLElement) : void {
                 eventName: ["touchstart"],
                 useCapture: false,
                 action: (evt : TouchEvent) : boolean => {
-                    // let touch = evt.touches[0];
+                    // Récupération de la touche et des informations utiles
                     let touch = evt.changedTouches.item(0);
                     originalMatrix = transfo.getMatrixFromElement(element);
-                    let inv = originalMatrix.inverse();
                     pointerId_1 = touch.identifier;
+                    // (Pour obtenir les coordonées selon l'élément et non l'HTML, on utilise la matrice inverse de l'élément)
+                    let inv = originalMatrix.inverse();
                     Pt1_coord_element = transfo.getPoint(touch.clientX * inv.a + touch.clientY * inv.c + inv.e, touch.clientX * inv.b + touch.clientY * inv.d + inv.f);
+                    Pt1_coord_parent = transfo.getPoint(touch.clientX, touch.clientY);
                     return true;
                 }
             },
@@ -40,11 +42,13 @@ function multiTouch(element: HTMLElement) : void {
                 action: (evt : TouchEvent) : boolean => {
                     evt.preventDefault();
                     evt.stopPropagation();
+                    // On vérifie que la touche déplacée est celle prise en compte pour la translation
                     let touch = getRelevantDataFromEvent(evt);
                     if (touch != null){
+                        // On met à jour la coordonée du mouvement dans le repère HTML
                         Pt1_coord_parent = transfo.getPoint(touch.clientX, touch.clientY);
+                        // On déplace l'élément
                         transfo.drag(element, originalMatrix, Pt1_coord_element, Pt1_coord_parent);
-                        console.log("translating");
                         return true;
                     }
 
@@ -57,8 +61,10 @@ function multiTouch(element: HTMLElement) : void {
                 eventName: ["touchend"],
                 useCapture: true,
                 action: (evt : TouchEvent) : boolean => {
+                    // On vérifie que la touche relachée est celle prise en compte pour la translation
                     let touch = getRelevantDataFromEvent(evt);
                     if(touch != null){
+                        // On retire la touche des touches utilisées
                         pointerId_1 = null;
                         return true;
                     }
@@ -70,8 +76,10 @@ function multiTouch(element: HTMLElement) : void {
                 eventName: ["touchstart"],
                 useCapture: false,
                 action: (evt : TouchEvent) : boolean => {
+                    // Récupération de la nouvelle touche et des informations utiles
                     let touch = evt.changedTouches.item(0);
                     pointerId_2 = touch.identifier;
+                    // (Pour obtenir les coordonées selon l'élément et non l'HTML, on utilise la matrice inverse de l'élément)
                     let inv = originalMatrix.inverse();
                     Pt2_coord_element = transfo.getPoint(touch.clientX * inv.a + touch.clientY * inv.c + inv.e, touch.clientX * inv.b + touch.clientY * inv.d + inv.f);
                     Pt2_coord_parent = transfo.getPoint(touch.clientX, touch.clientY);
@@ -85,15 +93,17 @@ function multiTouch(element: HTMLElement) : void {
                 action: (evt : TouchEvent) : boolean => {
                     evt.preventDefault();
                     evt.stopPropagation();
+                    // On vérifie que la touche déplacée est l'une de celles prises en compte pour le rotozoom
                     let touch = getRelevantDataFromEvent(evt);
                     if (touch != null){
+                        // On met à jour la coordonée du mouvement de la bonne touche dans le repère HTML
                         if(touch.identifier === pointerId_1)
                             Pt1_coord_parent = transfo.getPoint(touch.clientX, touch.clientY);
                         else
                             Pt2_coord_parent = transfo.getPoint(touch.clientX, touch.clientY);
 
+                        // On rotozoom l'élément
                         transfo.rotozoom(element, originalMatrix, Pt1_coord_element, Pt1_coord_parent, Pt2_coord_element, Pt2_coord_parent);
-                        console.log("rotozooming");
                         return true;
                     }
 
@@ -106,13 +116,16 @@ function multiTouch(element: HTMLElement) : void {
                 eventName: ["touchend"],
                 useCapture: true,
                 action: (evt : TouchEvent) : boolean => {
+                    // On vérifie que la touche relachée est l'une de celles prises en compte pour le rotozoom
                     let touch = getRelevantDataFromEvent(evt);
                     if(touch != null){
+                        // Si la touche relachée est la première à avoir été cliquée,on considère maintenant la seconde touche comme la première, pour la translation
                         if(touch.identifier === pointerId_1){
                             pointerId_1 = pointerId_2;
                             Pt1_coord_element = Pt2_coord_element;
                             Pt1_coord_parent = Pt2_coord_parent;
                         }
+                        // On retire la seconde touche des touches utilisées
                         pointerId_2 = null;
 
                         return true
