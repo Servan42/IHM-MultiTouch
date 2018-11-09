@@ -24,12 +24,12 @@ function multiTouch(element: HTMLElement) : void {
                 eventName: ["touchstart"],
                 useCapture: false,
                 action: (evt : TouchEvent) : boolean => {
-                    let touch = evt.touches[0];
+                    // let touch = evt.touches[0];
+                    let touch = evt.changedTouches.item(0);
                     originalMatrix = transfo.getMatrixFromElement(element);
                     let inv = originalMatrix.inverse();
                     pointerId_1 = touch.identifier;
                     Pt1_coord_element = transfo.getPoint(touch.clientX * inv.a + touch.clientY * inv.c + inv.e, touch.clientX * inv.b + touch.clientY * inv.d + inv.f);
-                    Pt1_coord_parent = Pt1_coord_element;
                     return true;
                 }
             },
@@ -58,7 +58,7 @@ function multiTouch(element: HTMLElement) : void {
                 useCapture: true,
                 action: (evt : TouchEvent) : boolean => {
                     let touch = getRelevantDataFromEvent(evt);
-                    if(touch.identifier != null && touch.identifier === pointerId_1){
+                    if(touch != null){
                         pointerId_1 = null;
                         return true;
                     }
@@ -70,10 +70,11 @@ function multiTouch(element: HTMLElement) : void {
                 eventName: ["touchstart"],
                 useCapture: false,
                 action: (evt : TouchEvent) : boolean => {
-                    let touch = evt.touches[0];
+                    let touch = evt.changedTouches.item(0);
                     pointerId_2 = touch.identifier;
-                    Pt2_coord_element = transfo.getPoint(touch.clientX, touch.clientY);
-                    Pt2_coord_parent = Pt2_coord_element;
+                    let inv = originalMatrix.inverse();
+                    Pt2_coord_element = transfo.getPoint(touch.clientX * inv.a + touch.clientY * inv.c + inv.e, touch.clientX * inv.b + touch.clientY * inv.d + inv.f);
+                    Pt2_coord_parent = transfo.getPoint(touch.clientX, touch.clientY);
                     return true;
                 }
             },
@@ -107,7 +108,7 @@ function multiTouch(element: HTMLElement) : void {
                 action: (evt : TouchEvent) : boolean => {
                     let touch = getRelevantDataFromEvent(evt);
                     if(touch != null){
-                        if(touch.identifier === pointerId_2){
+                        if(touch.identifier === pointerId_1){
                             pointerId_1 = pointerId_2;
                             Pt1_coord_element = Pt2_coord_element;
                             Pt1_coord_parent = Pt2_coord_parent;

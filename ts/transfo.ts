@@ -70,18 +70,42 @@ export let rotozoom =   ( element           : HTMLElement
                         , Pt2_coord_parent  : SVGPoint
                         ) => {
     // TO BE DONE ->
-    // s = (dy’/dy - dx’/dx)
-    // / (dy/dx + dx / dy)
-    // Soit, pour c:
-    // c = (dy’ - sdx) /dy ou
-    // c = (dx’ + sdy) /dx
+    // dx = P2.x - P1.x
+    let dx = Pt2_coord_element.x - Pt1_coord_element.x;
+    // dy = P2.y - P1.y
+    let dy = Pt2_coord_element.y - Pt1_coord_element.y;
+    // dx’ = P2’.x - P1’.x
+    let dxp = Pt2_coord_parent.x - Pt1_coord_parent.x;
+    // dy’ = P2’.y - P1’.y
+    let dyp = Pt2_coord_parent.y - Pt1_coord_parent.y;
 
-    // Avec c et s calculés, on obtient e et f
-    // e = P1’.x - cP1.x + sP1.y
-    // f = P1’.y - sP1.x - cP1.y
+    if(dx != dy){
+        if(dx == 0){
+            // s = -dx’/dy && c=dy’/dy
+            originalMatrix.b = -dxp/dy;
+            originalMatrix.a = dyp/dy;
+        }
+        if(dy == 0){
+            // s = dy’/dx && c=dx’/dx
+            originalMatrix.b = dyp/dx;
+            originalMatrix.a = dxp/dx;
+        }
+        if(dx != 0 && dy != 0) {
+            // s = (dy’/dy - dx’/dx) / (dy/dx + dx / dy)
+            // c = (dy’ - sdx) /dy
+            originalMatrix.b = (dyp/dy - dxp/dx) / (dy/dx + dx/dy);
+            originalMatrix.a = (dyp - originalMatrix.b*dx/dy) / dy;
+        }
 
+        originalMatrix.c = -originalMatrix.b;
+        originalMatrix.d = originalMatrix.a;
 
-    // originalMatrix.s =
+        // e = P1’.x - cP1.x + sP1.y
+        // f = P1’.y - sP1.x - cP1.y
+        originalMatrix.e = Pt1_coord_parent.x - originalMatrix.a*Pt1_coord_element.x + originalMatrix.b*Pt1_coord_element.y;
+        originalMatrix.f = Pt1_coord_parent.y - originalMatrix.b*Pt1_coord_element.x - originalMatrix.a*Pt1_coord_element.y
+    }
+
     setMatrixToElement(element, originalMatrix);
 };
 
